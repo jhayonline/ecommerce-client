@@ -8,6 +8,7 @@ import { wishlistApi, imagesApi, favoritesApi } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import type { ProductResponseData } from "@/lib/api";
+import { getAssetUrl } from "@/lib/api/config";
 
 interface ProductWithDetails extends ProductResponseData {
   primaryImage?: string;
@@ -48,10 +49,8 @@ const WishlistPage = () => {
               }
             }
 
-            if (primaryImage && !primaryImage.startsWith("http")) {
-              const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api";
-              const API_BASE_URL_WITHOUT_API = API_BASE_URL.replace("/api", "");
-              primaryImage = `${API_BASE_URL_WITHOUT_API}${primaryImage}`;
+            if (primaryImage) {
+              primaryImage = getAssetUrl(primaryImage);
             }
 
             return {

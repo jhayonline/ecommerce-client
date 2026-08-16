@@ -1,7 +1,5 @@
+import { API_BASE_URL, getAssetUrl } from './config';
 import { ApiResponse } from './types';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5150/api';
-const API_BASE_URL_WITHOUT_API = API_BASE_URL.replace('/api', '');
 
 export async function backendRequest<T>(
   endpoint: string,
@@ -10,9 +8,9 @@ export async function backendRequest<T>(
   const url = `${API_BASE_URL}${endpoint}`;
   const token = localStorage.getItem('access_token');
 
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...(options.headers as Record<string, string> | undefined),
   };
 
   if (token) {
@@ -35,10 +33,4 @@ export async function backendRequest<T>(
   };
 }
 
-export const getImageUrl = (path: string): string => {
-  if (!path) return '';
-  if (path.startsWith('http')) return path;
-  // Remove leading slash if present to avoid double slashes
-  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-  return `${API_BASE_URL_WITHOUT_API}/${cleanPath}`;
-};
+export const getImageUrl = getAssetUrl;

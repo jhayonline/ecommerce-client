@@ -17,6 +17,7 @@ import LocationPicker from "@/components/sell/LocationPicker";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { productsApi, imagesApi } from "@/lib/api";
+import { API_BASE_URL } from "@/lib/api/config";
 
 interface Spec {
   id: string;
@@ -88,7 +89,7 @@ const SellPage: React.FC = () => {
     setLoadingSpecs(true);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api"}/categories/${categoryId}/specs`,
+        `${API_BASE_URL}/categories/${categoryId}/specs`,
       );
       const data = await response.json();
       const specsData = Array.isArray(data) ? data : data.data || [];
@@ -233,7 +234,7 @@ const SellPage: React.FC = () => {
       };
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api"}/products/create`,
+        `${API_BASE_URL}/products/create`,
         {
           method: "POST",
           headers: {
@@ -267,7 +268,7 @@ const SellPage: React.FC = () => {
 
       toast({ title: "Success!", description: "Your item has been listed successfully" });
       navigate(`/product/${productPid}`);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Failed to create product:", error);
       toast({
         title: "Error",

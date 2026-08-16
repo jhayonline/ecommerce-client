@@ -21,6 +21,7 @@ import SpecFilters from "@/components/SpecFilters";
 import { useSearchParams } from "react-router-dom";
 import { iconMap } from "@/lib/iconMap";
 import { Package } from "lucide-react";
+import { API_BASE_URL, getAssetUrl } from "@/lib/api/config";
 
 interface ProductWithDetails extends ProductResponseData {
   primaryImage?: string;
@@ -77,11 +78,6 @@ const ShopPage = () => {
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const API_BASE_URL = useMemo(() => {
-    const base = import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api";
-    return base.replace("/api", "");
-  }, []);
-
   useEffect(() => {
     loadCategories();
     loadCategoryCounts();
@@ -121,7 +117,7 @@ const ShopPage = () => {
   const loadCategoryCounts = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api"}/categories/counts`,
+        `${API_BASE_URL}/categories/counts`,
       );
       const data = await response.json();
       setCategoryCounts(data);
@@ -244,11 +240,7 @@ const ShopPage = () => {
                 if (imagesResponse.success && imagesResponse.data.length > 0) {
                   const primaryImg = imagesResponse.data.find((img) => img.is_primary);
                   const imageUrl = primaryImg?.image_url || imagesResponse.data[0]?.image_url;
-                  if (imageUrl && !imageUrl.startsWith("http")) {
-                    primaryImage = `${API_BASE_URL}${imageUrl}`;
-                  } else {
-                    primaryImage = imageUrl;
-                  }
+                  primaryImage = getAssetUrl(imageUrl);
                 }
               } catch (error) {
                 // silent fail

@@ -30,6 +30,7 @@ import { useAuth } from "@/hooks/use-auth";
 import FollowButton from "@/components/FollowButton";
 import { OnlineIndicator } from "@/components/OnlineIndicator";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { API_BASE_URL, getAssetUrl } from "@/lib/api/config";
 
 interface ProductSpec {
   spec_id: string;
@@ -97,7 +98,7 @@ const DetailPage: React.FC = () => {
     setLoadingReviews(true);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api"}/products/${pid}/reviews`,
+        `${API_BASE_URL}/products/${pid}/reviews`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -322,7 +323,7 @@ const DetailPage: React.FC = () => {
       } else {
         throw new Error("Failed to send message");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Failed to start chat:", error);
       toast({
         title: "Error",
@@ -775,9 +776,7 @@ const DetailPage: React.FC = () => {
                   {seller.avatar_url ? (
                     <img
                       src={
-                        seller.avatar_url.startsWith("http")
-                          ? seller.avatar_url
-                          : `http://localhost:5150${seller.avatar_url}`
+                        getAssetUrl(seller.avatar_url)
                       }
                       alt={seller.name}
                       className="w-full h-full object-cover"
@@ -865,9 +864,7 @@ const DetailPage: React.FC = () => {
                       {review.user_avatar ? (
                         <img
                           src={
-                            review.user_avatar.startsWith("http")
-                              ? review.user_avatar
-                              : `${(import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api").replace("/api", "")}${review.user_avatar}`
+                            getAssetUrl(review.user_avatar)
                           }
                           alt={review.user_name}
                           className="w-full h-full object-cover"
@@ -1081,9 +1078,7 @@ const DetailPage: React.FC = () => {
                             {seller.avatar_url ? (
                               <img
                                 src={
-                                  seller.avatar_url.startsWith("http")
-                                    ? seller.avatar_url
-                                    : `http://localhost:5150${seller.avatar_url}`
+                                  getAssetUrl(seller.avatar_url)
                                 }
                                 alt={seller.name}
                                 className="w-full h-full object-cover"
@@ -1193,9 +1188,7 @@ const DetailPage: React.FC = () => {
                                   {review.user_avatar ? (
                                     <img
                                       src={
-                                        review.user_avatar.startsWith("http")
-                                          ? review.user_avatar
-                                          : `${(import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api").replace("/api", "")}${review.user_avatar}`
+                                        getAssetUrl(review.user_avatar)
                                       }
                                       alt={review.user_name}
                                       className="w-full h-full object-cover"

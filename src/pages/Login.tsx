@@ -36,7 +36,6 @@ const Login: React.FC = () => {
     } catch (error) {
       // Error is already handled in AuthContext, we don't need to show another toast here
       // The AuthContext will show the specific error message from the API
-      console.log('Login error caught in component:', error);
     }
   };
 
@@ -49,7 +48,7 @@ const Login: React.FC = () => {
     },
     {
       name: 'Google',
-      icon: (props) => (
+      icon: (props: React.SVGProps<SVGSVGElement>) => (
         <svg {...props} viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
           <path d="M21.35 11.1h-9.36v2.96h5.44c-.23 1.26-1.42 3.7-5.44 3.7-3.28 0-5.95-2.7-5.95-6.03s2.67-6.03 5.95-6.03c1.87 0 3.12.8 3.84 1.49l2.62-2.53C17.2 3.38 15.1 2.5 12 2.5 6.96 2.5 2.92 6.54 2.92 11.58s4.04 9.08 9.08 9.08c5.24 0 8.7-3.68 8.7-8.88 0-.6-.07-1.04-.17-1.49z" />
         </svg>
@@ -59,7 +58,7 @@ const Login: React.FC = () => {
     },
     {
       name: 'Apple',
-      icon: (props) => (
+      icon: (props: React.SVGProps<SVGSVGElement>) => (
         <svg {...props} viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
           <path d="M16.365 1.43c0 1.14-.48 2.24-1.26 3.06-.84.84-2.1 1.5-3.27 1.5-.12-1.08.36-2.22 1.2-3.06.84-.84 2.04-1.5 3.24-1.5.03 0 .06 0 .09 0zm3.72 16.14c-.69 1.47-1.53 2.94-2.76 2.97-1.2.03-1.59-.78-3-1.59-1.38-.78-2.4-.78-3.78 0-1.44.81-1.8 1.59-3 .63-1.23-.96-2.13-2.43-2.82-3.9-1.53-3.12-.78-6.96 1.23-8.94.87-.9 2.1-1.56 3.36-1.56 1.26 0 2.43.84 3.78.81 1.32-.03 2.13-.81 3.72-.81 1.29 0 2.64.69 3.54 1.86-3.12 1.83-2.64 6.33.72 7.53z" />
         </svg>

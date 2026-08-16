@@ -1,7 +1,5 @@
 import { backendRequest } from "./client";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api";
-const API_BASE_URL_WITHOUT_API = API_BASE_URL.replace("/api", "");
+import { getAssetUrl } from "./config";
 
 export interface ChatMessage {
   id: string;
@@ -27,7 +25,7 @@ export interface Conversation {
 const formatAvatarUrl = (url: string | null): string | null => {
   if (!url) return null;
   if (url.startsWith("http")) return url;
-  return `${API_BASE_URL_WITHOUT_API}${url}`;
+  return getAssetUrl(url);
 };
 
 export const chatApi = {

@@ -25,10 +25,9 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   const { toast } = useToast();
   const { user } = useAuth();
 
-  // Compare by pid if available, otherwise fall back to id string comparison
-  const isOwnProfile = userPid
-    ? user?.id === userPid
-    : user?.id === userId.toString();
+  // Compare pid to pid and id to id: the previous version compared a numeric
+  // id against a string, so it was always false and never hid the button.
+  const isOwnProfile = userPid ? user?.pid === userPid : user?.id === userId;
 
   useEffect(() => {
     if (user && !isOwnProfile) {
@@ -87,11 +86,6 @@ const FollowButton: React.FC<FollowButtonProps> = ({
       setIsLoading(false);
     }
   };
-
-  // Safe to early return AFTER all hooks
-  if (user?.id === userId.toString()) {
-    return null;
-  }
 
   const buttonVariants = {
     default: isFollowing

@@ -64,7 +64,7 @@ const Register: React.FC = () => {
       });
 
       navigate('/');
-    } catch (error: any) {
+    } catch (error) {
       // Check if it's a validation error from our form
       if (error.message.includes("Passwords don't match") ||
           error.message.includes("Password must be at least") ||
@@ -78,7 +78,6 @@ const Register: React.FC = () => {
       }
       // For API errors, they are already handled in AuthContext
       // So we don't need to show another toast here
-      console.log('Registration error caught in component:', error);
     }
   };
 

@@ -10,8 +10,6 @@ interface CategoryPickerProps {
 
 interface CategoryNode extends CategoryResponseData {
   children?: CategoryNode[];
-  level: number;
-  description?: string | null;
 }
 
 const CategoryPicker: React.FC<CategoryPickerProps> = ({ selectedCategoryId, onSelect }) => {

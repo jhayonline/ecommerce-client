@@ -56,28 +56,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(true);
       const token = localStorage.getItem("access_token");
 
-      console.log("=== Auth Check Debug ===");
-      console.log("Token exists:", !!token);
-      if (token) {
-        console.log("Token value:", token.substring(0, 50) + "...");
-        // Check token expiration
-        try {
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          console.log("Token expires:", new Date(payload.exp * 1000).toLocaleString());
-          console.log("Is token expired?", payload.exp * 1000 < Date.now());
-        } catch (e) {
-          console.log("Could not parse token");
-        }
-      }
-
       if (!token) {
-        console.log("No token found, user not authenticated");
         setUser(null);
         return;
       }
 
       const response = await authApi.getCurrentUser();
-      console.log("getCurrentUser response:", response);
 
       if (response.success && response.data) {
         const userData: User = {
@@ -90,10 +74,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           is_verified: response.data.is_verified || false,
           created_at: response.data.created_at || new Date().toISOString(),
         };
-        console.log("User restored from session:", userData);
-        setUser(userData); // <-- THIS SHOULD BE THERE
+        setUser(userData);
       } else {
-        console.log("getCurrentUser failed, clearing token");
         localStorage.removeItem("access_token");
         setUser(null);
       }
@@ -115,7 +97,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           ...userData,
           id: typeof userData.id === "string" ? parseInt(userData.id, 10) : userData.id,
         };
-        console.log("User logged in:", formattedUser);
         setUser(formattedUser);
         toast({
           title: "Login Successful",

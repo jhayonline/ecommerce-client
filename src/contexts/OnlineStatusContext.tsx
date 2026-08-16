@@ -61,18 +61,15 @@ export const OnlineStatusProvider: React.FC<{ children: React.ReactNode }> = ({ 
     // Then every 30 seconds
     heartbeatIntervalRef.current = setInterval(sendHeartbeat, 30000);
 
-    // Send heartbeat before page unload
-    const handleBeforeUnload = () => {
-      navigator.sendBeacon("http://localhost:5150/api/online-status/heartbeat", JSON.stringify({}));
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
+    // No unload handler on purpose: `sendBeacon` cannot carry the auth header,
+    // so the old one was rejected with a 401 anyway, and a heartbeat on the way
+    // out would have marked the user online for another five minutes. The
+    // server ages users out once heartbeats stop.
     return () => {
       if (heartbeatIntervalRef.current) {
         clearInterval(heartbeatIntervalRef.current);
         heartbeatIntervalRef.current = null;
       }
-      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [authLoading, isAuthenticated, userId]); // Add authLoading to dependencies
 

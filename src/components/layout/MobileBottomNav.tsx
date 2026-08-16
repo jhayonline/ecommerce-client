@@ -4,16 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { profileApi } from "@/lib/api";
 import { OnlineIndicator } from "@/components/OnlineIndicator";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api";
-const API_BASE = API_BASE_URL.replace("/api", "");
-
-const resolveImageUrl = (url: string | null | undefined): string => {
-  if (!url) return "";
-  if (url.startsWith("http")) return url;
-  const cleanPath = url.startsWith("/") ? url.slice(1) : url;
-  return `${API_BASE}/${cleanPath}`;
-};
+import { getAssetUrl } from "@/lib/api/config";
 
 type Tab = {
   name: string;
@@ -136,9 +127,8 @@ const MobileBottomNav: React.FC = () => {
   }, []);
 
   const getAvatarUrl = () => {
-    const url = profileAvatar || user?.avatar_url;
-    if (!url) return null;
-    return resolveImageUrl(url);
+    if (!profileAvatar) return null;
+    return getAssetUrl(profileAvatar);
   };
 
   const avatarUrl = getAvatarUrl();

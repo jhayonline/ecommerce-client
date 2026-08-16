@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { MapPin, ChevronDown } from "lucide-react";
+import { API_BASE_URL } from "@/lib/api/config";
 
 interface LocationPickerProps {
   selectedRegionId: string | null;
@@ -38,7 +39,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const loadRegions = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api"}/regions`,
+        `${API_BASE_URL}/regions`,
       );
       const data = await response.json();
       if (data.success !== false) {
@@ -56,7 +57,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     setLoadingTowns(true);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api"}/regions/${regionId}/towns`,
+        `${API_BASE_URL}/regions/${regionId}/towns`,
       );
       const data = await response.json();
       if (data.success !== false) {

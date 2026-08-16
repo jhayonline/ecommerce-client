@@ -1,4 +1,5 @@
 import { backendRequest } from './client';
+import { API_BASE_URL } from './config';
 import {
   ListingsResponse,
   ProfileResponseData,
@@ -65,7 +66,6 @@ export const profileApi = {
     const formData = new FormData();
     formData.append('avatar', file);
     const token = localStorage.getItem('access_token');
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5150/api';
 
     const response = await fetch(`${API_BASE_URL}/profile/avatar`, {
       method: 'POST',

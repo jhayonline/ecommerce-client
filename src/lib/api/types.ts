@@ -22,6 +22,8 @@ export interface CurrentUserResponseData {
   pid: string;
   name: string;
   email: string;
+  role: string;
+  is_verified: boolean;
 }
 
 export interface UserProfile {
@@ -114,6 +116,7 @@ export interface CategoryResponseData {
   slug: string;
   parent_id: string | null;
   level: number;
+  description: string | null;
   display_order: number | null;
   is_active: boolean;
   created_at: string | null;

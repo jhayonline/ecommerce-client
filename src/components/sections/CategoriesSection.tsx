@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   Flame,
@@ -172,14 +172,12 @@ const CategoriesSection: React.FC = () => {
     setLoading(true);
     try {
       const response = await categoriesApi.getAllCategories();
-      console.log("Categories API response:", response);
 
       if (response.success && response.data) {
         // Filter to show only top-level categories (level 1) and active ones
         const topLevelCategories = response.data.filter(
           (cat) => cat.level === 1 && cat.is_active === true,
         );
-        console.log("Top level categories:", topLevelCategories);
         setCategories(topLevelCategories);
       } else {
         console.error("Failed to load categories:", response);
@@ -211,7 +209,7 @@ const CategoriesSection: React.FC = () => {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: {
       opacity: 0,
       y: 30,

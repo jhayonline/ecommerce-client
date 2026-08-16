@@ -1,15 +1,8 @@
 import { backendRequest, getImageUrl } from './client';
+import { API_BASE_URL } from './config';
 import type { ProductImage } from './types';
 
-export interface ProductImage {
-  id: string;
-  image_url: string;
-  is_primary: boolean;
-  display_order: number;
-}
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5150/api';
-const API_BASE_URL_WITHOUT_API = API_BASE_URL.replace('/api', '');
+export type { ProductImage } from './types';
 
 export const imagesApi = {
   async getImages(productPid: string): Promise<{ success: boolean; data: ProductImage[]; message: string }> {
@@ -32,7 +25,7 @@ export const imagesApi = {
     formData.append('image', file);
 
     const token = localStorage.getItem('access_token');
-    const url = `${API_BASE_URL_WITHOUT_API}/api/products/${productPid}/images`;
+    const url = `${API_BASE_URL}/products/${productPid}/images`;
 
     const response = await fetch(url, {
       method: 'POST',

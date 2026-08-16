@@ -75,7 +75,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
           created_at: d.created_at,
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Failed to load profile",
         description: error.message || "Something went wrong",
@@ -119,7 +119,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
           description: "Your profile has been updated successfully",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Update Failed",
         description: error.message || "Something went wrong",

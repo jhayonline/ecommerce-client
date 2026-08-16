@@ -2,6 +2,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Star, Clock, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getAssetUrl } from "@/lib/api/config";
 
 interface Review {
   id: string;
@@ -50,7 +51,6 @@ const AllReviewsModal: React.FC<AllReviewsModalProps> = ({
   reviews,
   productName,
 }) => {
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api";
 
   return (
     <AnimatePresence>
@@ -105,7 +105,7 @@ const AllReviewsModal: React.FC<AllReviewsModalProps> = ({
                             src={
                               review.user_avatar.startsWith("http")
                                 ? review.user_avatar
-                                : `${API_BASE_URL.replace("/api", "")}${review.user_avatar}`
+                                : getAssetUrl(review.user_avatar)
                             }
                             alt={review.user_name}
                             className="w-full h-full object-cover"

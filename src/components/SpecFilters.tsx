@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { X, ChevronDown, ChevronUp } from "lucide-react";
+import { API_BASE_URL } from "@/lib/api/config";
 
 interface SpecFilter {
   spec_id: string;
@@ -31,7 +32,7 @@ const SpecFilters: React.FC<SpecFiltersProps> = ({ categoryId, selectedSpecs, on
     setLoading(true);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api"}/categories/${categoryId}/specs`,
+        `${API_BASE_URL}/categories/${categoryId}/specs`,
       );
       const data = await response.json();
       const specsData = Array.isArray(data) ? data : data.data || [];

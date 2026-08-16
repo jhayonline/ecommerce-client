@@ -12,14 +12,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { UserProfile as UserProfileType } from "@/lib/api/follows";
 import { OnlineIndicator } from "@/components/OnlineIndicator";
+import { getAssetUrl } from "@/lib/api/config";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api";
-const API_BASE = API_BASE_URL.replace("/api", "");
-
-const resolveImageUrl = (url: string | null | undefined): string => {
-  if (!url) return "";
-  return url.startsWith("http") ? url : `${API_BASE}${url}`;
-};
+const resolveImageUrl = getAssetUrl;
 
 const UserAvatar = ({
   user,

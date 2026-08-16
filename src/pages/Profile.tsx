@@ -26,6 +26,7 @@ import Header from "@/components/layout/Header";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import Footer from "@/components/layout/Footer";
 import { OnlineIndicator } from "@/components/OnlineIndicator";
+import { getAssetUrl } from "@/lib/api/config";
 
 const Profile: React.FC = () => {
   const { profile, isLoading, updateProfile } = useProfile();
@@ -143,7 +144,7 @@ const Profile: React.FC = () => {
             description: "Profile picture updated successfully",
           });
         }
-      } catch (error: any) {
+      } catch (error) {
         toast({
           title: "Upload failed",
           description: error.message || "Something went wrong",
@@ -155,9 +156,7 @@ const Profile: React.FC = () => {
 
   const getAvatarUrl = () => {
     if (!profile?.avatar_url) return null;
-    return profile.avatar_url.startsWith("http")
-      ? profile.avatar_url
-      : `http://localhost:5150${profile.avatar_url}`;
+    return getAssetUrl(profile.avatar_url);
   };
 
   if (isLoading) {
@@ -244,7 +243,7 @@ const Profile: React.FC = () => {
                     {/* Online Status Indicator */}
                     {authUser?.id && (
                       <div className="absolute bottom-1 right-1">
-                        <OnlineIndicator userId={parseInt(authUser.id)} size="lg" />
+                        <OnlineIndicator userId={authUser.id} size="lg" />
                       </div>
                     )}
 
@@ -265,7 +264,7 @@ const Profile: React.FC = () => {
                   </div>
                   <h2 className="text-xl font-semibold flex items-center justify-center gap-2">
                     {fullName || "User"}
-                    {authUser?.id && <OnlineIndicator userId={parseInt(authUser.id)} size="sm" />}
+                    {authUser?.id && <OnlineIndicator userId={authUser.id} size="sm" />}
                   </h2>
                   <p className="text-gray-600">{profile.email}</p>
                   <p className="text-sm text-red-600 mt-1 capitalize">{profile.role}</p>

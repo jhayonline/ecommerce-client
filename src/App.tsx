@@ -22,7 +22,6 @@ import EditProduct from "./pages/EditProduct";
 import MyListings from "./pages/MyListings";
 import UserProfile from "./pages/UserProfile";
 import { OnlineStatusProvider } from "@/contexts/OnlineStatusContext";
-import { Heartbeat } from "@/components/Heartbeat";
 
 // Admin
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -38,7 +37,6 @@ const App = () => (
     <AuthProvider>
       <ProfileProvider>
         <OnlineStatusProvider>
-          <Heartbeat />
           <TooltipProvider>
             <Toaster />
             <Sonner />

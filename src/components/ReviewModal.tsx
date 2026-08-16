@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { API_BASE_URL } from "@/lib/api/config";
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -13,8 +14,6 @@ interface ReviewModalProps {
   productName: string;
   onReviewSubmitted: () => void;
 }
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api";
 
 const ReviewModal: React.FC<ReviewModalProps> = ({
   isOpen,

@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import type { ProductImage } from "@/lib/api";
 import PriceInsight from "@/components/PriceInsight";
+import { API_BASE_URL } from "@/lib/api/config";
 
 interface Spec {
   id: string;
@@ -90,7 +91,7 @@ const EditProduct: React.FC = () => {
     setLoadingSpecs(true);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api"}/categories/${categoryId}/specs`,
+        `${API_BASE_URL}/categories/${categoryId}/specs`,
       );
       const data = await response.json();
       const specsData = Array.isArray(data) ? data : data.data || [];
@@ -289,7 +290,7 @@ const EditProduct: React.FC = () => {
       };
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5150/api"}/products/update/${pid}`,
+        `${API_BASE_URL}/products/update/${pid}`,
         {
           method: "PUT",
           headers: {
@@ -324,7 +325,7 @@ const EditProduct: React.FC = () => {
       });
 
       navigate("/seller/dashboard");
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
         description: error.message || "Failed to update product",

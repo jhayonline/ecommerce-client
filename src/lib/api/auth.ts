@@ -40,10 +40,6 @@ export const authApi = {
 
     if (token) {
       localStorage.setItem("access_token", token);
-      localStorage.setItem("user_id", String(data.id)); // Store numeric ID
-      if (data.role) {
-        localStorage.setItem("user_role", data.role);
-      }
     }
 
     return {
@@ -68,6 +64,8 @@ export const authApi = {
 
   async logout(): Promise<{ success: boolean; message: string; data: null }> {
     localStorage.removeItem("access_token");
+    // Clear identity keys older builds used to cache; nothing reads them now.
+    localStorage.removeItem("user_id");
     localStorage.removeItem("user_role");
     return { success: true, message: "Logged out", data: null };
   },
@@ -75,29 +73,19 @@ export const authApi = {
   async getCurrentUser(): Promise<CurrentUserResponse> {
     const response = await backendRequest<CurrentUserResponseData>("/auth/current");
 
-    // Get role from localStorage if available
-    const savedRole = localStorage.getItem("user_role");
-
-    // Try to get stored user ID
-    let userId = response.data.id;
-    if (!userId) {
-      const storedId = localStorage.getItem("user_id");
-      if (storedId) {
-        userId = parseInt(storedId, 10);
-      }
-    }
-
+    // Role and verification state come from the server on every check. They
+    // used to be read back out of localStorage, which any user can edit.
     return {
       success: true,
       message: "Success",
       data: {
-        id: userId,
+        id: response.data.id,
         pid: response.data.pid,
         email: response.data.email,
         first_name: response.data.name?.split(" ")[0] || "",
         last_name: response.data.name?.split(" ")[1] || "",
-        role: savedRole || "user",
-        is_verified: false,
+        role: response.data.role || "user",
+        is_verified: response.data.is_verified,
         created_at: new Date().toISOString(),
       },
     };
