@@ -1,91 +1,39 @@
-import React, { useState, useEffect } from "react";
+import { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight, ArrowUpRight, Search, X, MapPin } from "lucide-react";
 
-const HeroSection: React.FC = () => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const images = [
-    {
-      url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRhvkKSsL9etHe0tKms2AC0dUAtfnS7Vsj8I1SWQBFhgAgunkyY924snoKwhi1Wk4P4k8mrTvSxtAUYTG-PcLhDL8EplSUsu3aIAaLRQ&s=10?w=800&h=600",
-      alt: "",
-    },
-    {
-      url: "https://cloudcommercepro.com/wp-content/uploads/2020/09/marketplace-hero.jpg",
-      alt: "",
-    },
-    {
-      url: "https://www.coursevox.com/store/1167/6179a579f91da881be2c758b_morningbrewShVipPImS6kunsplash_5c8728bacb20daf02414ecbdf89e0418_2000-1699777146680.png",
-      alt: "",
-    },
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
+export default function HeroSection() {
+  const [query, setQuery] = useState("");
+  const input = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      {/* Background Pattern - Subtle */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-gradient-to-bl from-red-50/30 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-1/4 h-1/3 bg-gradient-to-tr from-orange-50/20 to-transparent rounded-full blur-3xl" />
-      </div>
-
-      <div className="container mx-auto px-4 pt-16 pb-12 md:pt-20 md:pb-16">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12">
-          {/* Left Column - Content */}
-          <div className="flex-1 max-w-2xl mb-6">
-            {/* Main Heading */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight tracking-tight">
-              Ghana's Premium
-              <span className="block text-red-600 mt-2">Online Marketplace</span>
-            </h1>
-
-            {/* Description */}
-            <p className="text-base md:text-lg text-gray-600 leading-relaxed mt-6 max-w-xl">
-              Connect with thousands of trusted sellers. Find everything from electronics to
-              fashion, vehicles to real estate all in one place.
-            </p>
-          </div>
-
-          {/* Right Column - Hero Image */}
-          <div className="flex-1">
-            <div className="relative">
-              {/* Main Image Card */}
-              <div className="relative rounded-2xl overflow-hidden shadow-xl transition-all duration-500 ease-in-out">
-                <img
-                  src={images[currentImageIndex].url}
-                  alt={images[currentImageIndex].alt}
-                  className="w-full h-auto object-cover transition-opacity duration-500"
-                  style={{ aspectRatio: "4/3" }}
-                />
-                {/* Overlay gradient for text contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-              </div>
-
-              {/* Image Indicators */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                {images.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentImageIndex(idx)}
-                    className={`transition-all duration-300 rounded-full ${
-                      idx === currentImageIndex
-                        ? "w-6 h-1.5 bg-white"
-                        : "w-1.5 h-1.5 bg-white/50 hover:bg-white/75"
-                    }`}
-                    aria-label={`Go to image ${idx + 1}`}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
+    <section className="market-hero" aria-labelledby="hero-title">
+      <div className="market-container hero-layout">
+        <div className="hero-copy">
+          <p className="eyebrow"><span className="brand-dot" /> YOUR WORLD. YOUR MARKETPLACE.</p>
+          <h1 id="hero-title">Good finds.<br />Great <span>possibilities.</span></h1>
+          <p className="hero-description">A fresh find. A new beginning. Discover what’s next from sellers across Ghana.</p>
+          <form className="hero-search" role="search" noValidate onSubmit={(event) => { event.preventDefault(); navigate(query.trim() ? `/shop?search=${encodeURIComponent(query.trim())}` : "/shop"); }}>
+            <Search size={21} aria-hidden="true" />
+            <label className="sr-only" htmlFor="market-search">Search the marketplace</label>
+            <input id="market-search" ref={input} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="What are you looking for?" type="search" />
+            {query && <button type="button" className="search-clear" aria-label="Clear search" onClick={() => { setQuery(""); input.current?.focus(); }}><X size={17} /></button>}
+            <button className="search-submit" type="submit"><span>Search</span><ArrowRight size={18} /></button>
+          </form>
+          <div className="hero-popular"><span>Explore</span>{[["Phones", "smartphones"], ["Fashion", "men"], ["Furniture", "furniture"]].map(([name, slug]) => <Link key={slug} to={`/shop?category=${slug}`}>{name}<ArrowUpRight size={12} /></Link>)}</div>
+          <p className="hero-local"><MapPin size={15} /> From Accra to everywhere in Ghana.</p>
+        </div>
+        <div className="hero-editorial" aria-label="Explore marketplace categories">
+          <Link to="/shop?category=laptops" className="editorial-card editorial-main">
+            <img src="/images/headphones.jpg" alt="Over-ear headphones illustrating electronics" fetchPriority="high" />
+            <span className="editorial-tag">EVERYDAY, UPGRADED</span>
+            <div className="editorial-caption"><div><small>TECH & ELECTRONICS</small><strong>Find your frequency.</strong></div><span className="editorial-arrow"><ArrowUpRight size={23} /></span></div>
+          </Link>
+          <Link to="/shop?category=men" className="editorial-card editorial-style"><img src="/images/sneakers.jpg" alt="Red sneakers illustrating fashion" /><div className="editorial-caption"><div><small>FASHION & STYLE</small><strong>Make your move.</strong></div><ArrowUpRight size={21} /></div></Link>
+          <Link to="/shop?category=furniture" className="editorial-card editorial-home"><img src="/images/chair.jpg" alt="Modern chair illustrating home and living" /><div className="editorial-caption"><div><small>HOME & LIVING</small><strong>A space that’s you.</strong></div><ArrowUpRight size={21} /></div></Link>
+          <div className="editorial-note"><span className="brand-dot" /> A little inspiration. A lot to discover.</div>
         </div>
       </div>
     </section>
   );
-};
-
-export default HeroSection;
+}
