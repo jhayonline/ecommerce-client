@@ -163,7 +163,11 @@ const Header: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const profileMenuItems = [
-    { name: "Notifications", icon: <Bell className="w-4 h-4" />, action: () => navigate("/notifications") },
+    {
+      name: "Notifications",
+      icon: <Bell className="w-4 h-4" />,
+      action: () => navigate("/notifications"),
+    },
     {
       name: "My Profile",
       icon: <User className="w-4 h-4" />,

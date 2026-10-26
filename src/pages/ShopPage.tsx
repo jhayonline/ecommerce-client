@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import {
   X,
   SlidersHorizontal,
@@ -48,13 +54,24 @@ interface CategoryWithSubs extends CategoryResponseData {
 
 const ShopPage = () => {
   const [products, setProducts] = useState<ProductWithDetails[]>([]);
-  const [allCategories, setAllCategories] = useState<CategoryResponseData[]>([]);
-  const [categoriesWithSubs, setCategoriesWithSubs] = useState<CategoryWithSubs[]>([]);
-  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
+  const [allCategories, setAllCategories] = useState<CategoryResponseData[]>(
+    [],
+  );
+  const [categoriesWithSubs, setCategoriesWithSubs] = useState<
+    CategoryWithSubs[]
+  >([]);
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>(
+    {},
+  );
   const [loading, setLoading] = useState(true);
   const [productsError, setProductsError] = useState(false);
   const productRequest = useRef(0);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => { const category = new URLSearchParams(window.location.search).get("category"); return category ? [category] : []; });
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => {
+    const category = new URLSearchParams(window.location.search).get(
+      "category",
+    );
+    return category ? [category] : [];
+  });
   const [minPrice, setMinPrice] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(10000);
   const [globalMinPrice, setGlobalMinPrice] = useState(0);
@@ -70,9 +87,14 @@ const ShopPage = () => {
   });
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(() => new URLSearchParams(window.location.search).get("search") || "");
-  const [selectedSpecs, setSelectedSpecs] = useState<Record<string, string[]>>({});
-  const [hoveredCategory, setHoveredCategory] = useState<CategoryWithSubs | null>(null);
+  const [searchQuery, setSearchQuery] = useState(
+    () => new URLSearchParams(window.location.search).get("search") || "",
+  );
+  const [selectedSpecs, setSelectedSpecs] = useState<Record<string, string[]>>(
+    {},
+  );
+  const [hoveredCategory, setHoveredCategory] =
+    useState<CategoryWithSubs | null>(null);
   const [isHoveringSecondary, setIsHoveringSecondary] = useState(false);
   const hoverContainerRef = useRef<HTMLDivElement>(null);
   const secondaryRef = useRef<HTMLDivElement>(null);
@@ -87,7 +109,16 @@ const ShopPage = () => {
 
   useEffect(() => {
     loadProducts();
-  }, [selectedCategories, minPrice, maxPrice, sortBy, searchQuery, currentPage, selectedSpecs, allCategories]);
+  }, [
+    selectedCategories,
+    minPrice,
+    maxPrice,
+    sortBy,
+    searchQuery,
+    currentPage,
+    selectedSpecs,
+    allCategories,
+  ]);
 
   useEffect(() => {
     setSearchQuery(searchParams.get("search") || "");
@@ -114,9 +145,7 @@ const ShopPage = () => {
 
   const loadCategoryCounts = async () => {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/categories/counts`,
-      );
+      const response = await fetch(`${API_BASE_URL}/categories/counts`);
       const data = await response.json();
       setCategoryCounts(data);
     } catch (error) {
@@ -180,7 +209,9 @@ const ShopPage = () => {
 
       if (selectedCategories.length > 0) {
         const selectedCategory = allCategories.find(
-          (cat) => cat.name.toLowerCase() === selectedCategories[0].toLowerCase() || cat.slug.toLowerCase() === selectedCategories[0].toLowerCase(),
+          (cat) =>
+            cat.name.toLowerCase() === selectedCategories[0].toLowerCase() ||
+            cat.slug.toLowerCase() === selectedCategories[0].toLowerCase(),
         );
         params.category = selectedCategory?.slug || selectedCategories[0];
       }
@@ -237,8 +268,11 @@ const ShopPage = () => {
               try {
                 const imagesResponse = await imagesApi.getImages(product.pid);
                 if (imagesResponse.success && imagesResponse.data.length > 0) {
-                  const primaryImg = imagesResponse.data.find((img) => img.is_primary);
-                  const imageUrl = primaryImg?.image_url || imagesResponse.data[0]?.image_url;
+                  const primaryImg = imagesResponse.data.find(
+                    (img) => img.is_primary,
+                  );
+                  const imageUrl =
+                    primaryImg?.image_url || imagesResponse.data[0]?.image_url;
                   primaryImage = getAssetUrl(imageUrl);
                 }
               } catch (error) {
@@ -246,14 +280,14 @@ const ShopPage = () => {
               }
               return {
                 ...product,
-                primaryImage:
-                  primaryImage || "/images/item-placeholder.svg",
+                primaryImage: primaryImage || "/images/item-placeholder.svg",
                 rating: product.average_rating || 0,
                 reviews: product.total_reviews || 0,
               };
             }),
           );
-          if (request === productRequest.current) setProducts(productsWithImages);
+          if (request === productRequest.current)
+            setProducts(productsWithImages);
         };
         loadImages();
       }
@@ -274,7 +308,11 @@ const ShopPage = () => {
   const handleCategoryClick = (categoryName: string) => {
     setSelectedCategories([categoryName]);
     setCurrentPage(1);
-    setSearchParams({ category: allCategories.find(category => category.name === categoryName)?.slug || categoryName.toLowerCase() });
+    setSearchParams({
+      category:
+        allCategories.find((category) => category.name === categoryName)
+          ?.slug || categoryName.toLowerCase(),
+    });
     setSelectedSpecs({});
     setHoveredCategory(null);
     setIsHoveringSecondary(false);
@@ -438,11 +476,20 @@ const ShopPage = () => {
 
                 <div className="py-2">
                   {categoriesWithSubs.map((category) => (
-                    <div key={category.id} onMouseEnter={() => handleCategoryMouseEnter(category)}>
+                    <div
+                      key={category.id}
+                      onMouseEnter={() => handleCategoryMouseEnter(category)}
+                    >
                       <button
                         onClick={() => handleCategoryClick(category.name)}
                         className={`w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors duration-150 group ${
-                          selectedCategories.some(selected => selected.toLowerCase() === category.name.toLowerCase() || selected.toLowerCase() === category.slug.toLowerCase())
+                          selectedCategories.some(
+                            (selected) =>
+                              selected.toLowerCase() ===
+                                category.name.toLowerCase() ||
+                              selected.toLowerCase() ===
+                                category.slug.toLowerCase(),
+                          )
                             ? "bg-red-50 border-r-2 border-red-500"
                             : ""
                         }`}
@@ -450,7 +497,15 @@ const ShopPage = () => {
                         <div className="flex items-center gap-3">
                           <div
                             className={`text-gray-400 group-hover:text-red-500 transition-colors ${
-                              selectedCategories.some(selected => selected.toLowerCase() === category.name.toLowerCase() || selected.toLowerCase() === category.slug.toLowerCase()) ? "text-red-500" : ""
+                              selectedCategories.some(
+                                (selected) =>
+                                  selected.toLowerCase() ===
+                                    category.name.toLowerCase() ||
+                                  selected.toLowerCase() ===
+                                    category.slug.toLowerCase(),
+                              )
+                                ? "text-red-500"
+                                : ""
                             }`}
                           >
                             {category.icon}
@@ -458,23 +513,31 @@ const ShopPage = () => {
                           <div className="text-left">
                             <span
                               className={`text-sm font-medium ${
-                                selectedCategories.some(selected => selected.toLowerCase() === category.name.toLowerCase() || selected.toLowerCase() === category.slug.toLowerCase())
+                                selectedCategories.some(
+                                  (selected) =>
+                                    selected.toLowerCase() ===
+                                      category.name.toLowerCase() ||
+                                    selected.toLowerCase() ===
+                                      category.slug.toLowerCase(),
+                                )
                                   ? "text-red-600"
                                   : "text-gray-700 group-hover:text-gray-900"
                               }`}
                             >
                               {category.name}
                             </span>
-                            {category.productCount !== undefined && category.productCount > 0 && (
-                              <span className="text-xs text-gray-400 ml-1">
-                                ({category.productCount})
-                              </span>
-                            )}
+                            {category.productCount !== undefined &&
+                              category.productCount > 0 && (
+                                <span className="text-xs text-gray-400 ml-1">
+                                  ({category.productCount})
+                                </span>
+                              )}
                           </div>
                         </div>
-                        {category.subcategories && category.subcategories.length > 0 && (
-                          <ChevronRightIcon className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" />
-                        )}
+                        {category.subcategories &&
+                          category.subcategories.length > 0 && (
+                            <ChevronRightIcon className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" />
+                          )}
                       </button>
                     </div>
                   ))}
@@ -484,7 +547,9 @@ const ShopPage = () => {
                 {selectedCategoryObj && (
                   <div className="p-4 border-t border-gray-100">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-semibold text-gray-900 text-sm">Specifications</h4>
+                      <h4 className="font-semibold text-gray-900 text-sm">
+                        Specifications
+                      </h4>
                       {Object.keys(selectedSpecs).length > 0 && (
                         <button
                           onClick={() => setSelectedSpecs({})}
@@ -504,11 +569,15 @@ const ShopPage = () => {
 
                 {/* Price Range */}
                 <div className="p-4 border-t border-gray-100 bg-gray-50">
-                  <h4 className="font-semibold text-gray-900 mb-3 text-sm">Price Range</h4>
+                  <h4 className="font-semibold text-gray-900 mb-3 text-sm">
+                    Price Range
+                  </h4>
                   <div className="space-y-3">
                     <div className="flex gap-2">
                       <div className="flex-1">
-                        <label className="text-xs text-gray-500 mb-1 block">Min</label>
+                        <label className="text-xs text-gray-500 mb-1 block">
+                          Min
+                        </label>
                         <input
                           type="number"
                           value={minPrice}
@@ -521,7 +590,9 @@ const ShopPage = () => {
                         />
                       </div>
                       <div className="flex-1">
-                        <label className="text-xs text-gray-500 mb-1 block">Max</label>
+                        <label className="text-xs text-gray-500 mb-1 block">
+                          Max
+                        </label>
                         <input
                           type="number"
                           value={maxPrice}
@@ -566,7 +637,9 @@ const ShopPage = () => {
                   onMouseLeave={handleSecondaryMouseLeave}
                 >
                   <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-gray-100">
-                    <h3 className="font-semibold text-gray-900">{hoveredCategory.name}</h3>
+                    <h3 className="font-semibold text-gray-900">
+                      {hoveredCategory.name}
+                    </h3>
                   </div>
                   <div className="py-2 max-h-[calc(100vh-200px)] overflow-y-auto">
                     {hoveredCategory.subcategories.map((sub) => {
@@ -584,7 +657,9 @@ const ShopPage = () => {
                               {sub.name}
                             </span>
                             {subCount > 0 && (
-                              <span className="text-xs text-gray-400 ml-1">({subCount})</span>
+                              <span className="text-xs text-gray-400 ml-1">
+                                ({subCount})
+                              </span>
                             )}
                           </div>
                         </button>
@@ -596,12 +671,22 @@ const ShopPage = () => {
 
             {/* Main Content Area */}
             <div className="min-w-0 flex-1">
-              {productsError ? <div className="market-state"><h2>Listings couldn’t load.</h2><p>Check your connection and try again.</p><button className="market-button" onClick={loadProducts}>Try again</button></div> : <ProductGrid
-                products={products}
-                viewMode={viewMode}
-                onViewModeChange={setViewMode}
-                loading={loading}
-              />}
+              {productsError ? (
+                <div className="market-state">
+                  <h2>Listings couldn’t load.</h2>
+                  <p>Check your connection and try again.</p>
+                  <button className="market-button" onClick={loadProducts}>
+                    Try again
+                  </button>
+                </div>
+              ) : (
+                <ProductGrid
+                  products={products}
+                  viewMode={viewMode}
+                  onViewModeChange={setViewMode}
+                  loading={loading}
+                />
+              )}
 
               {pagination.total_pages > 1 && (
                 <div className="flex justify-center items-center gap-2 mt-8">
@@ -618,8 +703,14 @@ const ShopPage = () => {
                     {(() => {
                       const pages = [];
                       const maxVisible = 5;
-                      let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-                      const endPage = Math.min(pagination.total_pages, startPage + maxVisible - 1);
+                      let startPage = Math.max(
+                        1,
+                        currentPage - Math.floor(maxVisible / 2),
+                      );
+                      const endPage = Math.min(
+                        pagination.total_pages,
+                        startPage + maxVisible - 1,
+                      );
 
                       if (endPage - startPage + 1 < maxVisible) {
                         startPage = Math.max(1, endPage - maxVisible + 1);
@@ -659,8 +750,11 @@ const ShopPage = () => {
               {pagination.total > 0 && (
                 <div className="text-center text-sm text-gray-500 mt-4">
                   Showing {(currentPage - 1) * pagination.per_page + 1} to{" "}
-                  {Math.min(currentPage * pagination.per_page, pagination.total)} of{" "}
-                  {pagination.total.toLocaleString()} products
+                  {Math.min(
+                    currentPage * pagination.per_page,
+                    pagination.total,
+                  )}{" "}
+                  of {pagination.total.toLocaleString()} products
                 </div>
               )}
             </div>
@@ -703,7 +797,13 @@ const ShopPage = () => {
                           setShowFilters(false);
                         }}
                         className={`w-full text-left py-2 px-3 rounded-lg text-sm ${
-                          selectedCategories.some(selected => selected.toLowerCase() === category.name.toLowerCase() || selected.toLowerCase() === category.slug.toLowerCase())
+                          selectedCategories.some(
+                            (selected) =>
+                              selected.toLowerCase() ===
+                                category.name.toLowerCase() ||
+                              selected.toLowerCase() ===
+                                category.slug.toLowerCase(),
+                          )
                             ? "bg-red-50 text-red-600 font-medium"
                             : "text-gray-700 hover:bg-gray-50"
                         }`}
@@ -711,9 +811,12 @@ const ShopPage = () => {
                         <div className="flex items-center gap-2">
                           {category.icon}
                           <span>{category.name}</span>
-                          {category.productCount !== undefined && category.productCount > 0 && (
-                            <span className="text-xs text-gray-400">({category.productCount})</span>
-                          )}
+                          {category.productCount !== undefined &&
+                            category.productCount > 0 && (
+                              <span className="text-xs text-gray-400">
+                                ({category.productCount})
+                              </span>
+                            )}
                         </div>
                       </button>
                     ))}
@@ -722,10 +825,14 @@ const ShopPage = () => {
 
                 {/* Price Range */}
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-3">Price Range</h4>
+                  <h4 className="font-medium text-gray-900 mb-3">
+                    Price Range
+                  </h4>
                   <div className="flex gap-2">
                     <div className="flex-1">
-                      <label className="text-xs text-gray-500 mb-1 block">Min</label>
+                      <label className="text-xs text-gray-500 mb-1 block">
+                        Min
+                      </label>
                       <input
                         type="number"
                         value={minPrice}
@@ -738,7 +845,9 @@ const ShopPage = () => {
                       />
                     </div>
                     <div className="flex-1">
-                      <label className="text-xs text-gray-500 mb-1 block">Max</label>
+                      <label className="text-xs text-gray-500 mb-1 block">
+                        Max
+                      </label>
                       <input
                         type="number"
                         value={maxPrice}
@@ -767,7 +876,9 @@ const ShopPage = () => {
                 {selectedCategoryObj && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-gray-900">Specifications</h4>
+                      <h4 className="font-medium text-gray-900">
+                        Specifications
+                      </h4>
                       {Object.keys(selectedSpecs).length > 0 && (
                         <button
                           onClick={() => setSelectedSpecs({})}

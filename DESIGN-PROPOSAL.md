@@ -1,6 +1,6 @@
 # Phoenix Mall UI direction
 
-Status: proposed for review; implementation has not started.
+Status: approved and implemented. See docs/ui-verification.md for verification and limitations.
 
 ## Intent
 

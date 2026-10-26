@@ -20,7 +20,9 @@ const getCategorySlug = (categoryName: string): string => {
     Games: "video+games",
     "Pets & Animals": "dogs",
   };
-  return slugMap[categoryName] || categoryName.toLowerCase().replace(/\s+/g, "-");
+  return (
+    slugMap[categoryName] || categoryName.toLowerCase().replace(/\s+/g, "-")
+  );
 };
 
 // Get image for category
@@ -63,19 +65,85 @@ const getCategoryImage = (categoryName: string) => {
   return "https://placehold.co/400x400/e2e8f0/94a3b8?text=Category";
 };
 
-
 export default function CategoriesSection() {
-  const { data: categories = [], isPending, isError, refetch } = useQuery({
+  const {
+    data: categories = [],
+    isPending,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["homepage-categories"],
     queryFn: async () => {
       const response = await categoriesApi.getAllCategories();
       if (!response.success) throw new Error("Categories unavailable");
-      return response.data.filter(category => category.level === 1 && category.is_active).sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
+      return response.data
+        .filter((category) => category.level === 1 && category.is_active)
+        .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
     },
     retry: false,
   });
-  return <section className="market-section market-container" id="categories" aria-labelledby="categories-title">
-    <div className="section-heading"><div><p className="eyebrow">A PLACE FOR EVERY INTEREST</p><h2 id="categories-title">What are you into?</h2></div><Link className="text-link" to="/shop">Explore the marketplace <ArrowUpRight size={18} /></Link></div>
-    {isPending ? <div className="market-state" role="status"><Loader2 className="animate-spin" /> Loading categories…</div> : isError ? <div className="market-state"><Shapes /><p>Categories couldn’t load.</p><button className="text-link" onClick={() => refetch()}>Try again <ArrowUpRight size={16} /></button></div> : categories.length === 0 ? <div className="market-state"><Shapes /><p>New categories are on their way.</p><Link className="text-link" to="/shop">Browse all listings <ArrowUpRight size={16} /></Link></div> : <div className="category-grid">{categories.map(category => <Link className="category-tile" key={category.id} to={`/shop?category=${getCategorySlug(category.name)}`}><div className="category-photo"><img src={getCategoryImage(category.name)} alt="" loading="lazy" onError={event => { event.currentTarget.onerror = null; event.currentTarget.src = "/images/item-placeholder.svg"; }} /><span><ArrowUpRight size={18} /></span></div><h3>{category.name}</h3></Link>)}</div>}
-  </section>;
+  return (
+    <section
+      className="market-section market-container"
+      id="categories"
+      aria-labelledby="categories-title"
+    >
+      <div className="section-heading">
+        <div>
+          <p className="eyebrow">A PLACE FOR EVERY INTEREST</p>
+          <h2 id="categories-title">What are you into?</h2>
+        </div>
+        <Link className="text-link" to="/shop">
+          Explore the marketplace <ArrowUpRight size={18} />
+        </Link>
+      </div>
+      {isPending ? (
+        <div className="market-state" role="status">
+          <Loader2 className="animate-spin" /> Loading categories…
+        </div>
+      ) : isError ? (
+        <div className="market-state">
+          <Shapes />
+          <p>Categories couldn’t load.</p>
+          <button className="text-link" onClick={() => refetch()}>
+            Try again <ArrowUpRight size={16} />
+          </button>
+        </div>
+      ) : categories.length === 0 ? (
+        <div className="market-state">
+          <Shapes />
+          <p>New categories are on their way.</p>
+          <Link className="text-link" to="/shop">
+            Browse all listings <ArrowUpRight size={16} />
+          </Link>
+        </div>
+      ) : (
+        <div className="category-grid">
+          {categories.map((category) => (
+            <Link
+              className="category-tile"
+              key={category.id}
+              to={`/shop?category=${getCategorySlug(category.name)}`}
+            >
+              <div className="category-photo">
+                <img
+                  src={getCategoryImage(category.name)}
+                  alt=""
+                  loading="lazy"
+                  onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = "/images/item-placeholder.svg";
+                  }}
+                />
+                <span>
+                  <ArrowUpRight size={18} />
+                </span>
+              </div>
+              <h3>{category.name}</h3>
+            </Link>
+          ))}
+        </div>
+      )}
+    </section>
+  );
 }
