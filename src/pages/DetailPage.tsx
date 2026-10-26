@@ -521,7 +521,7 @@ const DetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background product-detail-page">
         <Header />
         <div className="flex items-center justify-center h-96">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
@@ -534,7 +534,7 @@ const DetailPage: React.FC = () => {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background product-detail-page">
         <Header />
         <div className="container mx-auto px-4 py-32 text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h1>
@@ -564,7 +564,7 @@ const DetailPage: React.FC = () => {
   // Mobile Layout - Complete version
   if (isMobile) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background product-detail-page">
         <Header />
 
         {/* Product Images - Full width carousel */}
@@ -574,7 +574,7 @@ const DetailPage: React.FC = () => {
               src={
                 hasImages
                   ? imageList[selectedImageIndex]
-                  : "https://placehold.co/800x800/e2e8f0/94a3b8?text=No+Image"
+                  : "/images/item-placeholder.svg"
               }
               alt={product.title}
               className="w-full h-full object-cover"
@@ -974,16 +974,16 @@ const DetailPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background product-detail-page">
       <Header />
 
-      <div className="container mx-auto px-4 pt-24 pb-12">
+      <div id="main-content" className="market-container pt-24 pb-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Left Column - Product Images */}
           <div className="relative">
             <div className="sticky top-24">
               <div
-                className="relative aspect-square overflow-hidden rounded-lg bg-gray-100 mb-4 cursor-zoom-in"
+                className="relative aspect-square overflow-hidden rounded-2xl bg-gray-100 mb-4 cursor-zoom-in"
                 onMouseMove={handleImageHover}
                 onMouseLeave={handleImageLeave}
               >
@@ -991,7 +991,7 @@ const DetailPage: React.FC = () => {
                   src={
                     hasImages
                       ? imageList[selectedImageIndex]
-                      : "https://placehold.co/800x800/e2e8f0/94a3b8?text=No+Image"
+                      : "/images/item-placeholder.svg"
                   }
                   alt={product.title}
                   className="w-full h-full object-cover"

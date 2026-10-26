@@ -27,6 +27,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
+  useEffect(() => { setQuery(initialValue); }, [initialValue]);
+
   // Load recent searches from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('recent_searches');

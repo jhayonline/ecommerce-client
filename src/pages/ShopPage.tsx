@@ -52,7 +52,9 @@ const ShopPage = () => {
   const [categoriesWithSubs, setCategoriesWithSubs] = useState<CategoryWithSubs[]>([]);
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [productsError, setProductsError] = useState(false);
+  const productRequest = useRef(0);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => { const category = new URLSearchParams(window.location.search).get("category"); return category ? [category] : []; });
   const [minPrice, setMinPrice] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(10000);
   const [globalMinPrice, setGlobalMinPrice] = useState(0);
@@ -68,7 +70,7 @@ const ShopPage = () => {
   });
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(() => new URLSearchParams(window.location.search).get("search") || "");
   const [selectedSpecs, setSelectedSpecs] = useState<Record<string, string[]>>({});
   const [hoveredCategory, setHoveredCategory] = useState<CategoryWithSubs | null>(null);
   const [isHoveringSecondary, setIsHoveringSecondary] = useState(false);
@@ -85,18 +87,14 @@ const ShopPage = () => {
 
   useEffect(() => {
     loadProducts();
-  }, [selectedCategories, minPrice, maxPrice, sortBy, searchQuery, currentPage, selectedSpecs]);
+  }, [selectedCategories, minPrice, maxPrice, sortBy, searchQuery, currentPage, selectedSpecs, allCategories]);
 
   useEffect(() => {
-    const searchFromUrl = searchParams.get("search");
-    if (searchFromUrl) {
-      setSearchQuery(searchFromUrl);
-    }
-    const categoryFromUrl = searchParams.get("category");
-    if (categoryFromUrl) {
-      setSelectedCategories([categoryFromUrl]);
-    }
-  }, []);
+    setSearchQuery(searchParams.get("search") || "");
+    const category = searchParams.get("category");
+    setSelectedCategories(category ? [category] : []);
+    setCurrentPage(1);
+  }, [searchParams]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -157,7 +155,9 @@ const ShopPage = () => {
   };
 
   const loadProducts = async () => {
+    const request = ++productRequest.current;
     setLoading(true);
+    setProductsError(false);
     try {
       const params: Record<string, any> = {
         page: currentPage,
@@ -180,11 +180,9 @@ const ShopPage = () => {
 
       if (selectedCategories.length > 0) {
         const selectedCategory = allCategories.find(
-          (cat) => cat.name.toLowerCase() === selectedCategories[0].toLowerCase(),
+          (cat) => cat.name.toLowerCase() === selectedCategories[0].toLowerCase() || cat.slug.toLowerCase() === selectedCategories[0].toLowerCase(),
         );
-        if (selectedCategory) {
-          params.category = selectedCategory.slug;
-        }
+        params.category = selectedCategory?.slug || selectedCategories[0];
       }
 
       if (minPrice > globalMinPrice) {
@@ -206,6 +204,7 @@ const ShopPage = () => {
       }
 
       const response = await productsApi.getProducts(params);
+      if (request !== productRequest.current) return;
 
       if (response.success && response.data) {
         if (response.pagination) {
@@ -248,17 +247,19 @@ const ShopPage = () => {
               return {
                 ...product,
                 primaryImage:
-                  primaryImage || "https://placehold.co/400x400/e2e8f0/94a3b8?text=No+Image",
+                  primaryImage || "/images/item-placeholder.svg",
                 rating: product.average_rating || 0,
                 reviews: product.total_reviews || 0,
               };
             }),
           );
-          setProducts(productsWithImages);
+          if (request === productRequest.current) setProducts(productsWithImages);
         };
         loadImages();
       }
     } catch (error) {
+      if (request !== productRequest.current) return;
+      setProductsError(true);
       console.error("Failed to load products:", error);
       toast({
         title: "Error",
@@ -266,14 +267,14 @@ const ShopPage = () => {
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      if (request === productRequest.current) setLoading(false);
     }
   };
 
   const handleCategoryClick = (categoryName: string) => {
     setSelectedCategories([categoryName]);
     setCurrentPage(1);
-    setSearchParams({ category: categoryName.toLowerCase() });
+    setSearchParams({ category: allCategories.find(category => category.name === categoryName)?.slug || categoryName.toLowerCase() });
     setSelectedSpecs({});
     setHoveredCategory(null);
     setIsHoveringSecondary(false);
@@ -388,7 +389,7 @@ const ShopPage = () => {
         <Header />
       </div>
 
-      <div className="pt-16">
+      <div id="main-content" className="pt-16">
         <HeroBanner />
 
         <div className="lg:hidden sticky top-16 z-40 bg-white border-b border-gray-200 p-3">
@@ -417,8 +418,8 @@ const ShopPage = () => {
           </button>
         </div>
 
-        <div className="container mx-auto px-3 sm:px-4 py-4 lg:py-6">
-          <div className="flex gap-0 relative">
+        <div className="market-container py-5 lg:py-8">
+          <div className="flex gap-6 relative">
             {/* Desktop Sidebar */}
             <div
               ref={hoverContainerRef}
@@ -441,7 +442,7 @@ const ShopPage = () => {
                       <button
                         onClick={() => handleCategoryClick(category.name)}
                         className={`w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors duration-150 group ${
-                          selectedCategories.includes(category.name)
+                          selectedCategories.some(selected => selected.toLowerCase() === category.name.toLowerCase() || selected.toLowerCase() === category.slug.toLowerCase())
                             ? "bg-red-50 border-r-2 border-red-500"
                             : ""
                         }`}
@@ -449,7 +450,7 @@ const ShopPage = () => {
                         <div className="flex items-center gap-3">
                           <div
                             className={`text-gray-400 group-hover:text-red-500 transition-colors ${
-                              selectedCategories.includes(category.name) ? "text-red-500" : ""
+                              selectedCategories.some(selected => selected.toLowerCase() === category.name.toLowerCase() || selected.toLowerCase() === category.slug.toLowerCase()) ? "text-red-500" : ""
                             }`}
                           >
                             {category.icon}
@@ -457,7 +458,7 @@ const ShopPage = () => {
                           <div className="text-left">
                             <span
                               className={`text-sm font-medium ${
-                                selectedCategories.includes(category.name)
+                                selectedCategories.some(selected => selected.toLowerCase() === category.name.toLowerCase() || selected.toLowerCase() === category.slug.toLowerCase())
                                   ? "text-red-600"
                                   : "text-gray-700 group-hover:text-gray-900"
                               }`}
@@ -594,13 +595,13 @@ const ShopPage = () => {
               )}
 
             {/* Main Content Area */}
-            <div className="flex-1">
-              <ProductGrid
+            <div className="min-w-0 flex-1">
+              {productsError ? <div className="market-state"><h2>Listings couldn’t load.</h2><p>Check your connection and try again.</p><button className="market-button" onClick={loadProducts}>Try again</button></div> : <ProductGrid
                 products={products}
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
                 loading={loading}
-              />
+              />}
 
               {pagination.total_pages > 1 && (
                 <div className="flex justify-center items-center gap-2 mt-8">
@@ -702,7 +703,7 @@ const ShopPage = () => {
                           setShowFilters(false);
                         }}
                         className={`w-full text-left py-2 px-3 rounded-lg text-sm ${
-                          selectedCategories.includes(category.name)
+                          selectedCategories.some(selected => selected.toLowerCase() === category.name.toLowerCase() || selected.toLowerCase() === category.slug.toLowerCase())
                             ? "bg-red-50 text-red-600 font-medium"
                             : "text-gray-700 hover:bg-gray-50"
                         }`}
